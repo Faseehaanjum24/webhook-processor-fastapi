@@ -38,16 +38,16 @@ def process_transaction(data: dict):
     # Idempotency lock
     if redis_client.exists(f"{key}:lock"):
         return
-
     redis_client.set(f"{key}:lock", 1)
 
     # Mark as PROCESSING
     redis_client.hset(key, mapping={
         "status": "PROCESSING",
-        "created_at": datetime.utcnow().isoformat(),
-         
+        "created_at": datetime.utcnow().isoformat()
     })
+    redis_client.hdel(key, "processed_at")  # ensures JSON null
 
+    # Simulate processing delay
     time.sleep(30)
 
     # Mark as PROCESSED
