@@ -79,7 +79,10 @@ def transaction_status(transaction_id: str):
     if not txn:
         return []
 
-    return [{
-        k.decode(): v.decode()
-        for k, v in txn.items()
-    }]
+    response = {k.decode(): v.decode() for k, v in txn.items()}
+
+    # Convert empty/missing processed_at to JSON null
+    if "processed_at" not in response or response["processed_at"] == "":
+        response["processed_at"] = None
+
+    return [response]
